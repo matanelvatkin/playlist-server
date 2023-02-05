@@ -3,7 +3,8 @@ const { validToken } = require("../auth");
 const userRouter = express.Router();
 const userService = require("../BL/user.service");
 const { sendError } = require("../errController");
-
+const multer = require("multer");
+const upload = multer({dest:"avatar_image"})
 /**
  * @swagger
  * tags:
@@ -198,6 +199,51 @@ userRouter.get("/favorite", validToken, async (req, res) => {
 userRouter.put("/favorite", validToken, async (req, res) => {
   try {
     const user = await userService.addToFavoriteSong(req.body, req.email);
+    res.status(200).send(user);
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+/**
+ * @swagger
+ * tags:
+ *  name: user
+ * /api/user/avatar:
+ *  put:
+ *    tags: [user]
+ *    description: Use to add user favorite songs
+ *    parameters:
+ *      - name: Authorization
+ *        in: header
+ *        description: JWT token for authentication
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: song
+ *        in: body
+ *        description: The song object
+ *        required: true
+ *        schema:
+ *          type: object
+ *          properties:
+ *            title:
+ *              type: string
+ *            duration_formatted:
+ *              type: string
+ *            image:
+ *              type: string
+ *            id:
+ *              type: string
+ *    responses:
+ *      '200':
+ *        description: In a successful response return user's favorite songs
+ *      '401':
+ *        description: user not authorized
+ */
+userRouter.put("/avatar", validToken,upload.single("avatar"), async (req, res) => {
+  try {
+    const user = await userService.changeAvatar(req.file, req.email);
     res.status(200).send(user);
   } catch (err) {
     sendError(res, err);

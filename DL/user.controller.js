@@ -14,13 +14,13 @@ async function readOne(filter, proj,populate) {
   return res[0];
 }
 
-async function update(id, newData,populate) {
+async function update(filter, newData,populate) {
   return await userData
-    .findOneAndUpdate(id, newData, { new: true })
+    .findOneAndUpdate(filter, newData, { new: true })
     .populate(populate);
 }
-async function del(id) {
-  return await update(id, { isActive: false });
+async function del(filter) {
+  return await update(filter, { isActive: false });
 }
 
 module.exports = { create, read, update, del, readOne };

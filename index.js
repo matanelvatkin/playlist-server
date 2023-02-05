@@ -34,6 +34,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
 
+app.use('/',express.static('avatar_image'))
 app.use('/api', mainRouter);
 
 app.listen(PORT, () => {

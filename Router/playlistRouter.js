@@ -161,8 +161,7 @@ playlistRouter.put("/song", validToken, async (req, res) => {
 
 playlistRouter.put("/delete", validToken, async (req, res) => {
   try {
-    await playlistService.deletePlaylist(req.body);
-    res.status(200).send("delete suscceded");
+    res.status(200).send(await playlistService.deletePlaylist(req.body));
   } catch (err) {
     sendError(res, err);
   }

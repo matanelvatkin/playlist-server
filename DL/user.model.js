@@ -20,6 +20,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     select: false,
   },
+  gender: {
+    enum: ['male', 'female'],
+    type: String,
+  } ,
+  avatar: {
+    type: String,
+  } ,
   playlists: [{ type: mongoose.Schema.Types.ObjectId, ref: "playlist" ,select:false}],
   favoritesSongs: [{song:{ type: mongoose.Schema.Types.ObjectId, ref: "song" },isActive:{type:Boolean,default:true},select:false}],
   createDate: {

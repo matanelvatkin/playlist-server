@@ -13,11 +13,11 @@ async function readOne(filter,proj) {
     return res[0]
 }
 
-async function update(id, newData) {
-    return await playlistData.findOneAndUpdate( id, newData,{ new: true }).populate("songs.song")
+async function update(filter, newData) {
+    return await playlistData.findOneAndUpdate( filter, newData,{ new: true }).populate("songs.song")
 }
-async function del(id) {
-    return await update(id, { isActive: false })
+async function del(_id) {
+    return await update({_id}, { isActive: false })
 }
 
 

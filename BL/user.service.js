@@ -3,10 +3,11 @@ const { createToken } = require("../auth");
 const userController = require("../DL/user.controller");
 const { errMessage, checkData } = require("../errController");
 const { getSong, createSong } = require("./songs.service");
+const fs = require("fs");
 const SALTROUNDS = Number(process.env.SALTROUNDS);
 
-const getUser = async (email, proj = undefined,populate) => {
-  const user = await userController.readOne({ email }, proj,populate);
+const getUser = async (email, proj = undefined, populate) => {
+  const user = await userController.readOne({ email }, proj, populate);
   if (!user && !user.isActive) throw errMessage.USER_NOT_FOUND;
   return user;
 };
@@ -26,6 +27,16 @@ const login = async (data) => {
   return token;
 };
 
+const changeAvatar = async (file, email) => {
+  checkData({ file, email }, ["file", "email"]);
+  if (!fs.existsSync(`./avatar_image/${email}`))
+    fs.mkdirSync(`./avatar_image/${email}`);
+  const src = `/${email}/${Date.now()}_${file.originalname}`;
+  fs.renameSync(file.path, `./avatar_image/${src}`);
+  const user = await userController.update({ email }, { avatar: src });
+  return user;
+};
+
 const createUser = async (data) => {
   checkData(data, [
     "fName",
@@ -33,20 +44,23 @@ const createUser = async (data) => {
     "email",
     "firstPassword",
     "secondPassword",
+    "gender",
   ]);
   if (data.firstPassword !== data.secondPassword)
     throw errMessage.PASSWORDS_ARE_NOT_EQUAL;
   await getUserForRegister(data.email);
   data.password = bcrypt.hashSync(data.firstPassword, SALTROUNDS);
+  if (data.gender === "male") {
+    data.avatar = "../avatar_image/male_avatar.jpg";
+  } else {
+    data.avatar = "../avatar_image/female_avatar.jpg";
+  }
   return await userController.create(data);
 };
 
 const addToFavoriteSong = async (data, email) => {
-  checkData({ ...data, email }, [
-    "id",
-    "email",
-  ]);
-  const user = await getUser(email,"favoritesSongs","favoritesSongs.song");
+  checkData({ ...data, email }, ["id", "email"]);
+  const user = await getUser(email, "favoritesSongs", "favoritesSongs.song");
   var song = await getSong(data.id);
   var isUpdated = false;
   if (!song) {
@@ -54,8 +68,9 @@ const addToFavoriteSong = async (data, email) => {
   } else if (song && user.favoritesSongs.length > 0) {
     if (user.favoritesSongs.find((obj) => obj.song.id === song.id)) {
       await userController.update(
-          { email, "favoritesSongs.song": song._id } ,
-        { $set: { "favoritesSongs.$.isActive": true } },"favoritesSongs.song"
+        { email, "favoritesSongs.song": song._id },
+        { $set: { "favoritesSongs.$.isActive": true } },
+        "favoritesSongs.song"
       );
       isUpdated = true;
     }
@@ -63,24 +78,26 @@ const addToFavoriteSong = async (data, email) => {
   if (!isUpdated) {
     await userController.update(
       { _id: user._id },
-      { $push: { "favoritesSongs": {song:song._id,isActive:true} } } ,"favoritesSongs.song"
+      { $push: { favoritesSongs: { song: song._id, isActive: true } } },
+      "favoritesSongs.song"
     );
   }
-  return await getUser(email,"favoritesSongs","favoritesSongs.song");
+  return await getUser(email, "+favoritesSongs", "favoritesSongs.song");
 };
 
 const addToPlaylist = async (data) => {
-  checkData(data,["_id", "email"]);
+  checkData(data, ["_id", "email"]);
   const updatedUser = await userController.update(
-    {email:data.email },
-    { $push: { playlists: data._id } }, "playlists"
+    { email: data.email },
+    { $push: { playlists: data._id } },
+    "playlists"
   );
   return updatedUser;
 };
 
 const getUserPlaylists = async (email) => {
   checkData({ email }, ["email"]);
-  const user = await getUser(email,"+playlists","playlists");
+  const user = await getUser(email, "+playlists", "playlists");
   const playlist = user.playlists.filter((playlist) => playlist.isActive);
   return playlist;
 };
@@ -93,9 +110,12 @@ const deleteUser = async (email) => {
 
 const deleteSongFromFavorite = async (email, id) => {
   checkData({ email, id }, ["email", "id"]);
-  const song = await getSong(id)
-  const isUpdated = await userController.update({ email, "favoritesSongs.song": song._id },
-    { $set: { "favoritesSongs.$.isActive": false } },"favoritesSongs.song");
+  const song = await getSong(id);
+  const isUpdated = await userController.update(
+    { email, "favoritesSongs.song": song._id },
+    { $set: { "favoritesSongs.$.isActive": false } },
+    "favoritesSongs.song"
+  );
   if (!isUpdated) throw errMessage.TRY_AGAIN;
   return isUpdated;
 };
@@ -110,4 +130,5 @@ module.exports = {
   getUserPlaylists,
   deleteUser,
   deleteSongFromFavorite,
+  changeAvatar,
 };

@@ -27,17 +27,17 @@ const login = async (data) => {
   return token;
 };
 
-const changeAvatar = async (file, email) => {
+const changeAvatar = async (file, email,host) => {
   checkData({ file, email }, ["file", "email"]);
   if (!fs.existsSync(`./avatar_image/${email}`))
     fs.mkdirSync(`./avatar_image/${email}`);
   const src = `/${email}/${Date.now()}_${file.originalname}`;
   fs.renameSync(file.path, `./avatar_image/${src}`);
-  const user = await userController.update({ email }, { avatar: src });
+  const user = await userController.update({ email }, { avatar: host+src });
   return user;
 };
 
-const createUser = async (data) => {
+const createUser = async (data,host) => {
   checkData(data, [
     "fName",
     "lName",
@@ -51,9 +51,9 @@ const createUser = async (data) => {
   await getUserForRegister(data.email);
   data.password = bcrypt.hashSync(data.firstPassword, SALTROUNDS);
   if (data.gender === "male") {
-    data.avatar = "../avatar_image/male_avatar.jpg";
+    data.avatar = host+"/male_avatar.jpg";
   } else {
-    data.avatar = "../avatar_image/female_avatar.jpg";
+    data.avatar = host+"/female_avatar.jpg";
   }
   return await userController.create(data);
 };

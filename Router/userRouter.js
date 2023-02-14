@@ -92,7 +92,7 @@ userRouter.post("/login", async (req, res) => {
  */
 userRouter.post("/register", async (req, res) => {
   try {
-    const user = await userService.createUser(req.body);
+    const user = await userService.createUser(req.body,req.protocol+"://"+req.headers.host);
     res.send(user);
   } catch (err) {
     sendError(res, err);
@@ -121,7 +121,7 @@ userRouter.post("/register", async (req, res) => {
  *        description: token isn't exists
  *      '400':
  *        description: user not authorized
- */
+*/
 userRouter.get("/", validToken, async (req, res) => {
   try {
     const user = await userService.getUser(req.email,"+favoritesSongs","favoritesSongs.song");
@@ -243,7 +243,7 @@ userRouter.put("/favorite", validToken, async (req, res) => {
  */
 userRouter.put("/avatar", validToken,upload.single("avatar"), async (req, res) => {
   try {
-    const user = await userService.changeAvatar(req.file, req.email);
+    const user = await userService.changeAvatar(req.file, req.email,req.protocol+"://"+req.headers.host);
     res.status(200).send(user);
   } catch (err) {
     sendError(res, err);

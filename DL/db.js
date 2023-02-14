@@ -6,11 +6,11 @@ async function connect() {
             { useNewUrlParser: true, useUnifiedTopology: true },
             (err) => {
                 if (err) throw "Error DB : " + err
-                console.log(`Connection to DB Success`);
+                // console.log(`Connection to DB Success`);
             })
         }
     catch (error) {
-        console.log(error);
+        // console.log(error);
         return error
     }
 }

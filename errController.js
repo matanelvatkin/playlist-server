@@ -24,7 +24,6 @@ const checkData = (data, parameters) => {
 };
 
 const sendError = (res, err) => {
-  console.log(err);
   res.status(err.code||999).send(err.message || "try again later")
 }
 

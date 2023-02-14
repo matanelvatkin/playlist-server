@@ -38,5 +38,5 @@ app.use('/',express.static('avatar_image'))
 app.use('/api', mainRouter);
 
 app.listen(PORT, () => {
-  console.log('server listen to ' +PORT);
+  // console.log('server listen to ' +PORT);
 });

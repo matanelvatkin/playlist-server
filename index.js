@@ -23,7 +23,7 @@ const swaggerOptions = {
         name: "matanel vatkin",
         email: "matanelvatkin@gmail.com"
       },
-      servers: ["http://localhost:5000"]
+      servers: ["https://playlist-rif9.onrender.com"]
     }
   },
   apis: ["index.js",'./Router/*.js']

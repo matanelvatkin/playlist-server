@@ -47,7 +47,7 @@ const addSongToPlaylist = async (data) => {
     song = await createSong(data);
   } else if (song && playlist.songs.length > 0) {
     if (user.favoritesSongs.find((obj) => obj.song.id === song.id)) {
-      updated =await playlistController.update(
+      updating =await playlistController.update(
         { _id: playlist._id, "songs.song": song._id },
         { $set: { "songs.$.isActive": true } }
       ); 

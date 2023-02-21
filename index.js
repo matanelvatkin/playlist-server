@@ -9,9 +9,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 
-
-app.use(cors());
+const corsOptions ={
+  origin:'https://playlist-client.onrender.com', 
+  credentials:true,            //access-control-allow-credentials:true
+}
 app.use(express.json());
+app.use(cors(corsOptions));
+
 
 const swaggerOptions = {
   swaggerDefinition: {

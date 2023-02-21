@@ -43,7 +43,7 @@ const upload = multer({dest:"avatar_image"})
 userRouter.post("/login", async (req, res) => {
   try {
     const token = await userService.login(req.body);
-    const user = await userService.getUser(req.body.email)
+    const user = await userService.getUser(req.body.email,"+favoritesSongs","favoritesSongs.song")
     res.send({token,user});
   } catch (err) {
     sendError(res, err);

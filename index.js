@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use(cors({
-  origin:"https://playlist-client.onrender.com",
-  "Access-Control-Allow-Origin": "https://playlist-client.onrender.com"
+  origin: "https://playlist-client.onrender.com",
+  referer: "https://playlist-client.onrender.com/",
 }));
 
 

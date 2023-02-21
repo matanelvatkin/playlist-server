@@ -8,13 +8,10 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const corsOptions ={
-    credentials:true,
-    optionSuccessStatus:200
-}
+
 
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(cors());
 
 const swaggerOptions = {
   swaggerDefinition: {

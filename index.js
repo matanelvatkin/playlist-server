@@ -8,13 +8,8 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
-const corsOptions ={
-  origin:'https://playlist-client.onrender.com', 
-  credentials:true,            //access-control-allow-credentials:true
-}
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(cors());
 
 
 const swaggerOptions = {
